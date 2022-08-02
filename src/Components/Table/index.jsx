@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as s from './style.jsx'
 
 import knightblack from './../../Assets/knight-black.png'
 
 export function Table() {
 	const [table, setTable] = useState([])
+	const [objTable, setObjTable] = useState([])
 	const tableIndex = []
 	let initialPositions = {
 		a8: 'rook-black',
@@ -46,107 +47,169 @@ export function Table() {
 	let cont = 0
 	let linePar = true
 
-	function newGame() {}
+	let infoClicks = []
+	let isFirstClick = true
 
-	function objSearch(obj, value) {
-		let result = null
-		obj.forEach((i, val) => {
-			if (val == value) {
-				result = i
-			}
-		})
-		return result
-	}
-	function objSearchIndex(obj, index) {
-		let result = null
-		obj.forEach((i, val) => {
-			if (i == index) {
-				result = i
-			}
-		})
-		return result
-	}
-	function createTable() {
+	useEffect(() => {
 		const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+		let contador = 0
 		for (let line = 8; line >= 1; --line) {
 			for (let column = 0; column < columns.length; ++column) {
 				const sq = columns[column] + line
 
+				if (initialPositions[sq]) {
+					setTable([
+						...table,
+						table.push({
+							position: sq,
+							contains: initialPositions[sq],
+							line,
+							column: columns[column],
+							index: contador,
+						}),
+					])
+				} else {
+					setTable([
+						...table,
+						table.push({
+							position: sq,
+							contains: '',
+							line,
+							column: columns[column],
+							index: contador,
+						}),
+					])
+				}
+				contador++
 				tableIndex.push(sq)
 			}
 		}
-	}
 
-	createTable()
+		console.log(table)
+	}, [])
+
+	function movePiece(item) {
+		if (!isFirstClick && infoClicks.length !== 2) {
+			infoClicks.push(item)
+			const indexPiece = infoClicks[0].index
+			const indexPieceGO = infoClicks[1].index
+			// console.log(table)
+			// console.log(indexPieceGO)
+			// console.log(infoClicks)
+			setTable([
+				...table,
+				((table[indexPieceGO].contains = infoClicks[0].contains),
+				(table[indexPiece].contains = '')),
+			])
+		}
+
+		if (isFirstClick && item.contains) {
+			infoClicks.push(item)
+			isFirstClick = false
+			// console.log(infoClicks)
+		}
+	}
 
 	return (
 		<s.TableComponent>
 			<s.Table>
-				{tableIndex.map((item, index) => {
-					if (cont >= 8) {
-						linePar = !linePar
-						cont = 0
-					}
-					cont++
-					if (linePar) {
-						if (index % 2 === 0) {
-							console.log(item)
-							if (initialPositions[item]) {
-								console.log(item, initialPositions[item])
+				{table ? console.log(table) : <></>}
+				{table ? (
+					table.map((item, index) => {
+						if (cont >= 8) {
+							linePar = !linePar
+							cont = 0
+						}
+						cont++
+						if (linePar) {
+							//TA CRIANDO UM OBJETO A MAIS TODA VEZ Q EDITA
+							if (table.length >= 65) {
+								table.pop()
 							}
-							return (
-								<div key={index} className={`sq ${item} black`}>
-									{initialPositions[item] ? (
-										<div
-											className={`piece ${initialPositions[item]}`}
-										></div>
-									) : (
-										<></>
-									)}
-								</div>
-							)
+							if (index % 2 === 0) {
+								return (
+									<div
+										key={index}
+										className={`sq black`}
+										id={`${item.position}`}
+										onClick={() => {
+											movePiece(item)
+										}}
+									>
+										{item.contains ? (
+											<div
+												className={`piece ${item.contains}`}
+											></div>
+										) : (
+											<></>
+										)}
+									</div>
+								)
+							} else {
+								return (
+									<div
+										key={index}
+										className={`sq white`}
+										id={`${item.position}`}
+										onClick={() => {
+											movePiece(item)
+										}}
+									>
+										{item.contains ? (
+											<div
+												className={`piece ${item.contains}`}
+											></div>
+										) : (
+											<></>
+										)}
+									</div>
+								)
+							}
 						} else {
-							return (
-								<div key={index} className={`sq ${item} white`}>
-									{initialPositions[item] ? (
-										<div
-											className={`piece ${initialPositions[item]}`}
-										></div>
-									) : (
-										<></>
-									)}
-								</div>
-							)
+							if (index % 2 !== 0) {
+								return (
+									<div
+										key={index}
+										className={`sq black`}
+										id={`${item.position}`}
+										onClick={() => {
+											movePiece(item)
+										}}
+									>
+										{item.contains ? (
+											<div
+												className={`piece ${item.contains}`}
+											></div>
+										) : (
+											<></>
+										)}
+									</div>
+								)
+							} else {
+								return (
+									<div
+										key={index}
+										className={`sq white`}
+										id={`${item.position}`}
+										onClick={() => {
+											movePiece(item)
+										}}
+									>
+										{item.contains ? (
+											<div
+												className={`piece ${item.contains}`}
+											></div>
+										) : (
+											<></>
+										)}
+									</div>
+								)
+							}
 						}
-					} else {
-						if (index % 2 !== 0) {
-							return (
-								<div key={index} className={`sq ${item} black`}>
-									{initialPositions[item] ? (
-										<div
-											className={`piece ${initialPositions[item]}`}
-										></div>
-									) : (
-										<></>
-									)}
-								</div>
-							)
-						} else {
-							return (
-								<div key={index} className={`sq ${item} white`}>
-									{initialPositions[item] ? (
-										<div
-											className={`piece ${initialPositions[item]}`}
-										></div>
-									) : (
-										<></>
-									)}
-								</div>
-							)
-						}
-					}
-				})}
-				{console.log(tableIndex)}
+					})
+				) : (
+					<h1>Loading</h1>
+				)}
 			</s.Table>
 		</s.TableComponent>
 	)

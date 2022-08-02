@@ -21,14 +21,17 @@ export const Table = styled.div`
 		width: 76px;
 		height: 76px;
 	}
+	h1 {
+		font-size: 10px;
+	}
 	.black {
 		background-color: gray;
 	}
 	.white {
 		background-color: white;
 	}
-	h1 {
-		font-size: 10px;
+	.possible {
+		background-color: green;
 	}
 	.piece {
 		cursor: pointer;
@@ -53,6 +56,7 @@ export const Table = styled.div`
 	}
 	.piece.queen-black {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png');
+		border-radius: 50%;
 	}
 
 	.piece.knight-white {
