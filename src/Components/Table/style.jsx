@@ -39,42 +39,42 @@ export const Table = styled.div`
 		height: 76px;
 		background-size: cover !important;
 	}
-	.piece.knight-black {
+	.piece.knight.black {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png');
 	}
-	.piece.pawn-black {
+	.piece.pawn.black {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png');
 	}
-	.piece.rook-black {
+	.piece.rook.black {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png');
 	}
-	.piece.bishop-black {
+	.piece.bishop.black {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png');
 	}
-	.piece.king-black {
+	.piece.king.black {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png');
 	}
-	.piece.queen-black {
+	.piece.queen.black {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png');
 		border-radius: 50%;
 	}
 
-	.piece.knight-white {
+	.piece.knight.white {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png');
 	}
-	.piece.pawn-white {
+	.piece.pawn.white {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png');
 	}
-	.piece.rook-white {
+	.piece.rook.white {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png');
 	}
-	.piece.bishop-white {
+	.piece.bishop.white {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png');
 	}
-	.piece.king-white {
+	.piece.king.white {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png');
 	}
-	.piece.queen-white {
+	.piece.queen.white {
 		background: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png');
 	}
 `

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import * as s from './style.jsx'
 
-import knightblack from './../../Assets/knight-black.png'
-
 export function Table() {
 	const [table, setTable] = useState([])
 	const [objTable, setObjTable] = useState([])
+	const [whitePlaying, setWhitePlaying] = useState(true)
+
 	const tableIndex = []
 	let initialPositions = {
 		a8: 'rook-black',
@@ -47,11 +47,12 @@ export function Table() {
 	let cont = 0
 	let linePar = true
 
-	let infoClicks = []
+	let infoClicks = ['', '']
 	let isFirstClick = true
 
+	const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
 	useEffect(() => {
-		const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 		let contador = 0
 		for (let line = 8; line >= 1; --line) {
 			for (let column = 0; column < columns.length; ++column) {
@@ -62,10 +63,12 @@ export function Table() {
 						...table,
 						table.push({
 							position: sq,
-							contains: initialPositions[sq],
+							contains: initialPositions[sq].split('-')[0],
 							line,
 							column: columns[column],
+							indexOfColumn: columns.indexOf(columns[column]),
 							index: contador,
+							color: initialPositions[sq].split('-')[1],
 						}),
 					])
 				} else {
@@ -76,6 +79,7 @@ export function Table() {
 							contains: '',
 							line,
 							column: columns[column],
+							indexOfColumn: columns.indexOf(columns[column]),
 							index: contador,
 						}),
 					])
@@ -87,33 +91,337 @@ export function Table() {
 
 		console.log(table)
 	}, [])
-
+	useEffect(() => {
+		setTable([...table, (table[63] = {})])
+	}, [])
 	function movePiece(item) {
-		if (!isFirstClick && infoClicks.length !== 2) {
-			infoClicks.push(item)
-			const indexPiece = infoClicks[0].index
-			const indexPieceGO = infoClicks[1].index
-			// console.log(table)
-			// console.log(indexPieceGO)
-			// console.log(infoClicks)
-			setTable([
-				...table,
-				((table[indexPieceGO].contains = infoClicks[0].contains),
-				(table[indexPiece].contains = '')),
-			])
+		if (!isFirstClick && infoClicks[0].position !== item.position) {
+			infoClicks[1] = item
+			if (infoClicks[0].contains === 'pawn') {
+				pawnMove(infoClicks[0], infoClicks[1])
+			}
+			if (infoClicks[0].contains === 'bishop') {
+				bishopMove(infoClicks[0], infoClicks[1])
+			}
+			makeANewMove()
 		}
-
-		if (isFirstClick && item.contains) {
-			infoClicks.push(item)
-			isFirstClick = false
-			// console.log(infoClicks)
+		if (whitePlaying && item.color === 'white') {
+			if (isFirstClick && item.contains) {
+				infoClicks[0] = item
+				isFirstClick = false
+			}
+		}
+		if (!whitePlaying && item.color === 'black') {
+			if (isFirstClick && item.contains) {
+				infoClicks[0] = item
+				isFirstClick = false
+			}
 		}
 	}
 
+	function makeANewMove() {
+		infoClicks[0] = ''
+		infoClicks[1] = ''
+		isFirstClick = true
+	}
+	function movingPiece(piece, goToSQ) {
+		const indexPiece = piece.index
+		const indexPieceGO = goToSQ.index
+		setTable([
+			...table,
+			(((table[indexPieceGO].contains = piece.contains),
+			(table[indexPieceGO].color = piece.color)),
+			(table[indexPiece].contains = ''),
+			(table[indexPiece].color = '')),
+		])
+		// setWhitePlaying(!whitePlaying)
+		makeANewMove()
+	}
+	function validateIFhaveAnotherPieceOnTheWay(piece, goToSq) {
+		if (piece.contains === 'pawn') {
+			if (piece.color === 'white') {
+				if (goToSq.line - piece.line > 1) {
+					const positionBeteween =
+						piece.column + String(piece.line + 1)
+
+					for (const item of table) {
+						if (item.position == positionBeteween) {
+							if (item.contains !== '') {
+								return true
+							}
+						}
+					}
+				}
+			}
+			if (piece.color === 'black') {
+				if (piece.line - goToSq.line > 1) {
+					const positionBeteween =
+						piece.column + String(piece.line - 1)
+
+					for (const item of table) {
+						if (item.position == positionBeteween) {
+							if (item.contains !== '') {
+								return true
+							}
+						}
+					}
+				}
+			}
+		}
+		if (piece.contains === 'bishop') {
+			let sqs = []
+
+			if (
+				piece.line < goToSq.line &&
+				piece.indexOfColumn > goToSq.indexOfColumn
+			) {
+				for (
+					let index = 1;
+					index <= goToSq.line - piece.line - 1;
+					index++
+				) {
+					const sq =
+						String(columns[piece.indexOfColumn - index]) +
+						String(piece.line + index)
+					sqs.push(sq)
+					console.log(sqs)
+				}
+			}
+			if (
+				piece.line < goToSq.line &&
+				piece.indexOfColumn < goToSq.indexOfColumn
+			) {
+				for (
+					let index = 1;
+					index <= goToSq.line - piece.line - 1;
+					index++
+				) {
+					const sq =
+						String(columns[piece.indexOfColumn + index]) +
+						String(piece.line + index)
+					sqs.push(sq)
+
+					console.log(sqs)
+				}
+			}
+			if (
+				piece.line > goToSq.line &&
+				piece.indexOfColumn < goToSq.indexOfColumn
+			) {
+				for (
+					let index = 1;
+					index <= piece.line - goToSq.line - 1;
+					index++
+				) {
+					const sq =
+						String(columns[piece.indexOfColumn + index]) +
+						String(piece.line - index)
+					sqs.push(sq)
+
+					console.log(sqs)
+				}
+			}
+			if (
+				piece.line > goToSq.line &&
+				piece.indexOfColumn > goToSq.indexOfColumn
+			) {
+				for (
+					let index = 1;
+					index <= piece.line - goToSq.line - 1;
+					index++
+				) {
+					const sq =
+						String(columns[piece.indexOfColumn - index]) +
+						String(piece.line - index)
+					sqs.push(sq)
+
+					console.log(sqs)
+				}
+			}
+			for (const item of table) {
+				for (const sq of sqs) {
+					if (item.position == sq) {
+						if (item.contains !== '') {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function validateIsFirstMoveOfPawn(piece, goToSQ) {
+		if (piece.color === 'white') {
+			if (
+				((goToSQ.line === piece.line + 2 &&
+					goToSQ.column === piece.column) ||
+					(goToSQ.line === piece.line + 1 &&
+						goToSQ.column === piece.column)) &&
+				goToSQ.contains == ''
+			) {
+				return true
+			}
+		}
+		if (piece.color === 'black') {
+			if (
+				((goToSQ.line === piece.line - 2 &&
+					goToSQ.column === piece.column) ||
+					(goToSQ.line === piece.line - 1 &&
+						goToSQ.column === piece.column)) &&
+				goToSQ.contains == ''
+			) {
+				return true
+			}
+		}
+	}
+	function validateMovePawn(piece, goToSQ) {
+		if (piece.color === 'white') {
+			if (
+				goToSQ.line === piece.line + 1 &&
+				goToSQ.column === piece.column &&
+				piece.line !== 2 &&
+				piece.line !== 2 &&
+				goToSQ.contains == ''
+			) {
+				return true
+			}
+		}
+		if (piece.color === 'black') {
+			if (
+				goToSQ.line === piece.line - 1 &&
+				goToSQ.column === piece.column &&
+				piece.line !== 7 &&
+				piece.line !== 7 &&
+				goToSQ.contains == ''
+			) {
+				return true
+			}
+		}
+	}
+	function validateEatPawn(piece, goToSQ) {
+		if (piece.color === goToSQ.color) {
+			makeANewMove()
+		} else {
+			if (piece.color === 'white') {
+				if (
+					((piece.indexOfColumn === goToSQ.indexOfColumn + 1 &&
+						goToSQ.contains !== '') ||
+						(piece.indexOfColumn === goToSQ.indexOfColumn - 1 &&
+							goToSQ.contains !== '')) &&
+					piece.line === goToSQ.line - 1
+				) {
+					return true
+				}
+			}
+			if (piece.color === 'black') {
+				if (
+					((piece.indexOfColumn === goToSQ.indexOfColumn + 1 &&
+						goToSQ.contains !== '') ||
+						(piece.indexOfColumn === goToSQ.indexOfColumn - 1 &&
+							goToSQ.contains !== '')) &&
+					goToSQ.line === piece.line - 1
+				) {
+					return true
+				}
+			}
+		}
+	}
+	function pawnMove(piece, goToSQ) {
+		const indexPiece = infoClicks[0].index
+		const indexPieceGO = infoClicks[1].index
+
+		if (
+			(piece.color === 'white' && goToSQ.color === 'white') ||
+			(piece.color === 'black' && goToSQ.color === 'black')
+		) {
+			makeANewMove()
+		}
+		if (piece.color === 'white') {
+			if (piece.line === 2) {
+				if (validateIFhaveAnotherPieceOnTheWay(piece, goToSQ)) {
+					makeANewMove()
+				} else {
+					if (validateIsFirstMoveOfPawn(piece, goToSQ)) {
+						movingPiece(piece, goToSQ)
+					}
+					if (piece.column !== goToSQ.column) {
+						if (validateEatPawn(piece, goToSQ)) {
+							movingPiece(piece, goToSQ)
+						}
+					}
+				}
+			}
+			if (piece.line !== 2) {
+				if (piece.column === goToSQ.column) {
+					if (validateMovePawn(piece, goToSQ)) {
+						movingPiece(piece, goToSQ)
+					}
+				}
+				if (piece.column !== goToSQ.column) {
+					if (validateEatPawn(piece, goToSQ)) {
+						movingPiece(piece, goToSQ)
+					}
+				}
+			}
+		}
+		if (piece.color === 'black') {
+			if (piece.line === 7) {
+				if (validateIFhaveAnotherPieceOnTheWay(piece, goToSQ)) {
+					makeANewMove()
+				} else {
+					if (validateIsFirstMoveOfPawn(piece, goToSQ)) {
+						movingPiece(piece, goToSQ)
+					}
+					if (piece.column !== goToSQ.column) {
+						if (validateEatPawn(piece, goToSQ)) {
+							movingPiece(piece, goToSQ)
+						}
+					}
+				}
+			}
+			if (piece.line !== 7) {
+				if (piece.column === goToSQ.column) {
+					if (validateMovePawn(piece, goToSQ)) {
+						movingPiece(piece, goToSQ)
+					}
+				}
+				if (piece.column !== goToSQ.column) {
+					if (validateEatPawn(piece, goToSQ)) {
+						movingPiece(piece, goToSQ)
+					}
+				}
+			}
+		} else {
+			makeANewMove()
+		}
+	}
+
+	function bishopMove(piece, goToSq) {
+		const distline = Number(goToSq.line - piece.line)
+		const distColumn = Number(goToSq.indexOfColumn - piece.indexOfColumn)
+		const xdistColumn = Number(piece.indexOfColumn - goToSq.indexOfColumn)
+
+		if (distline > 1 || distColumn > 1 || xdistColumn) {
+			if (!validateIFhaveAnotherPieceOnTheWay(piece, goToSq)) {
+				if (
+					Math.pow(distline, 2) == Math.pow(distColumn, 2) &&
+					piece.color !== goToSq.color
+				) {
+					movingPiece(piece, goToSq)
+				}
+			}
+		} else {
+			if (
+				Math.pow(distline, 2) == Math.pow(distColumn, 2) &&
+				piece.color !== goToSq.color
+			) {
+				movingPiece(piece, goToSq)
+			}
+		}
+	}
 	return (
 		<s.TableComponent>
 			<s.Table>
-				{table ? console.log(table) : <></>}
 				{table ? (
 					table.map((item, index) => {
 						if (cont >= 8) {
@@ -122,7 +430,7 @@ export function Table() {
 						}
 						cont++
 						if (linePar) {
-							//TA CRIANDO UM OBJETO A MAIS TODA VEZ Q EDITA
+							// TA CRIANDO UM OBJETO A MAIS TODA VEZ Q EDITA
 							if (table.length >= 65) {
 								table.pop()
 							}
@@ -136,9 +444,13 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
+										<h1>
+											{item.column}
+											{item.line}
+										</h1>
 										{item.contains ? (
 											<div
-												className={`piece ${item.contains}`}
+												className={`piece ${item.contains} ${item.color}`}
 											></div>
 										) : (
 											<></>
@@ -155,9 +467,13 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
+										<h1>
+											{item.column}
+											{item.line}
+										</h1>
 										{item.contains ? (
 											<div
-												className={`piece ${item.contains}`}
+												className={`piece ${item.contains} ${item.color}`}
 											></div>
 										) : (
 											<></>
@@ -176,9 +492,13 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
+										<h1>
+											{item.column}
+											{item.line}
+										</h1>
 										{item.contains ? (
 											<div
-												className={`piece ${item.contains}`}
+												className={`piece ${item.contains} ${item.color}`}
 											></div>
 										) : (
 											<></>
@@ -195,9 +515,13 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
+										<h1>
+											{item.column}
+											{item.line}
+										</h1>
 										{item.contains ? (
 											<div
-												className={`piece ${item.contains}`}
+												className={`piece ${item.contains} ${item.color}`}
 											></div>
 										) : (
 											<></>
