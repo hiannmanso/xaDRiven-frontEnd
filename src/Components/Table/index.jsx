@@ -3,7 +3,7 @@ import * as s from './style.jsx'
 
 export function Table() {
 	const [table, setTable] = useState([])
-	const [objTable, setObjTable] = useState([])
+
 	const [whitePlaying, setWhitePlaying] = useState(true)
 
 	const tableIndex = []
@@ -103,6 +103,44 @@ export function Table() {
 			if (infoClicks[0].contains === 'bishop') {
 				bishopMove(infoClicks[0], infoClicks[1])
 			}
+			if (infoClicks[0].contains === 'rook') {
+				rookMove(infoClicks[0], infoClicks[1])
+			}
+			if (infoClicks[0].contains === 'knight') {
+				knightMove(infoClicks[0], infoClicks[1])
+			}
+			if (infoClicks[0].contains === 'queen') {
+				const distline = Number(infoClicks[1].line - infoClicks[0].line)
+				const distColumn = Number(
+					infoClicks[1].indexOfColumn - infoClicks[0].indexOfColumn
+				)
+				const xdistColumn = Number(
+					infoClicks[0].indexOfColumn - infoClicks[1].indexOfColumn
+				)
+				if (
+					infoClicks[0].line === infoClicks[0].line ||
+					infoClicks[0].indexOfColumn === infoClicks[1].indexOfColumn
+				) {
+					rookMove(infoClicks[0], infoClicks[1])
+				}
+				if (distline > 1 || distColumn > 1 || xdistColumn > 1) {
+					bishopMove(infoClicks[0], infoClicks[1])
+				}
+				if (
+					Math.pow(infoClicks[0].line - infoClicks[1].line, 2) ===
+						1 ||
+					Math.pow(
+						infoClicks[0].indexOfColumn -
+							infoClicks[1].indexOfColumn,
+						2
+					) === 1
+				) {
+					bishopMove(infoClicks[0], infoClicks[1])
+				}
+			}
+			if (infoClicks[0].contains === 'king') {
+				kingMove(infoClicks[0], infoClicks[1])
+			}
 			makeANewMove()
 		}
 		if (whitePlaying && item.color === 'white') {
@@ -135,6 +173,7 @@ export function Table() {
 			(table[indexPiece].color = '')),
 		])
 		// setWhitePlaying(!whitePlaying)
+		console.log(table)
 		makeANewMove()
 	}
 	function validateIFhaveAnotherPieceOnTheWay(piece, goToSq) {
@@ -168,7 +207,7 @@ export function Table() {
 				}
 			}
 		}
-		if (piece.contains === 'bishop') {
+		if (piece.contains === 'bishop' || piece.contains === 'queen') {
 			let sqs = []
 
 			if (
@@ -246,6 +285,105 @@ export function Table() {
 						}
 					}
 				}
+			}
+		}
+		if (piece.contains === 'rook' || piece.contains === 'queen') {
+			if (
+				piece.line === goToSq.line &&
+				goToSq.indexOfColumn > piece.indexOfColumn
+			) {
+				let sqs = []
+				const dist = goToSq.indexOfColumn - piece.indexOfColumn
+				console.log(dist)
+				for (let index = 1; index <= dist - 1; index++) {
+					const sq =
+						String(columns[piece.indexOfColumn + index]) +
+						String(piece.line)
+					sqs.push(sq)
+				}
+
+				for (const item of table) {
+					for (const sq of sqs) {
+						if (item.position === sq) {
+							if (item.contains !== '') {
+								return true
+							}
+						}
+					}
+				}
+				console.log(sqs)
+			}
+			if (
+				piece.line === goToSq.line &&
+				goToSq.indexOfColumn < piece.indexOfColumn
+			) {
+				let sqs = []
+				const dist = piece.indexOfColumn - goToSq.indexOfColumn
+				console.log(dist)
+				for (let index = 1; index <= dist - 1; index++) {
+					const sq =
+						String(columns[piece.indexOfColumn - index]) +
+						String(piece.line)
+					sqs.push(sq)
+				}
+				for (const item of table) {
+					for (const sq of sqs) {
+						if (item.position === sq) {
+							if (item.contains !== '') {
+								return true
+							}
+						}
+					}
+				}
+				console.log(sqs)
+			}
+			if (
+				piece.indexOfColumn === goToSq.indexOfColumn &&
+				goToSq.line > piece.line
+			) {
+				let sqs = []
+				const dist = goToSq.line - piece.line
+				console.log(dist)
+				for (let index = 1; index <= dist - 1; index++) {
+					const sq =
+						String(columns[piece.indexOfColumn]) +
+						String(piece.line + index)
+					sqs.push(sq)
+				}
+				for (const item of table) {
+					for (const sq of sqs) {
+						if (item.position === sq) {
+							if (item.contains !== '') {
+								return true
+							}
+						}
+					}
+				}
+				console.log(sqs)
+			}
+			if (
+				piece.indexOfColumn === goToSq.indexOfColumn &&
+				goToSq.line < piece.line
+			) {
+				let sqs = []
+				const dist = piece.line - goToSq.line
+				console.log(dist)
+				for (let index = 1; index <= dist - 1; index++) {
+					const sq =
+						String(columns[piece.indexOfColumn]) +
+						String(piece.line - index)
+					sqs.push(sq)
+				}
+				for (const item of table) {
+					for (const sq of sqs) {
+						if (item.position === sq) {
+							if (item.contains !== '') {
+								return true
+							}
+						}
+					}
+				}
+				console.log(sqs)
 			}
 		}
 	}
@@ -401,7 +539,7 @@ export function Table() {
 		const distColumn = Number(goToSq.indexOfColumn - piece.indexOfColumn)
 		const xdistColumn = Number(piece.indexOfColumn - goToSq.indexOfColumn)
 
-		if (distline > 1 || distColumn > 1 || xdistColumn) {
+		if (distline > 1 || distColumn > 1 || xdistColumn > 1) {
 			if (!validateIFhaveAnotherPieceOnTheWay(piece, goToSq)) {
 				if (
 					Math.pow(distline, 2) == Math.pow(distColumn, 2) &&
@@ -417,6 +555,64 @@ export function Table() {
 			) {
 				movingPiece(piece, goToSq)
 			}
+		}
+	}
+	function rookMove(piece, goToSq) {
+		if (
+			(piece.line === goToSq.line || piece.column === goToSq.column) &&
+			piece.color !== goToSq.color
+		) {
+			if (!validateIFhaveAnotherPieceOnTheWay(piece, goToSq)) {
+				movingPiece(piece, goToSq)
+			}
+		}
+	}
+	function knightMove(piece, goToSq) {
+		console.log(piece, goToSq)
+		if (
+			((piece.line + 2 === goToSq.line &&
+				piece.indexOfColumn === goToSq.indexOfColumn + 1) ||
+				(piece.line + 2 === goToSq.line &&
+					piece.indexOfColumn === goToSq.indexOfColumn - 1) ||
+				(piece.line + 1 === goToSq.line &&
+					piece.indexOfColumn === goToSq.indexOfColumn + 2) ||
+				(piece.line + 1 === goToSq.line &&
+					piece.indexOfColumn === goToSq.indexOfColumn - 2) ||
+				(piece.line - 2 === goToSq.line &&
+					piece.indexOfColumn === goToSq.indexOfColumn + 1) ||
+				(piece.line - 2 === goToSq.line &&
+					piece.indexOfColumn === goToSq.indexOfColumn - 1) ||
+				(piece.line - 1 === goToSq.line &&
+					piece.indexOfColumn + 2 === goToSq.indexOfColumn) ||
+				(piece.line - 1 === goToSq.line &&
+					piece.indexOfColumn - 2 === goToSq.indexOfColumn)) &&
+			piece.color !== goToSq.color
+		) {
+			movingPiece(piece, goToSq)
+		}
+	}
+	function kingMove(piece, goToSq) {
+		console.log('king')
+		console.log(piece, goToSq)
+		if (
+			(piece.line + 1 === goToSq.line &&
+				piece.indexOfColumn === goToSq.indexOfColumn) ||
+			(piece.line - 1 === goToSq.line &&
+				piece.indexOfColumn === goToSq.indexOfColumn) ||
+			(piece.line === goToSq.line &&
+				piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
+			(piece.line === goToSq.line &&
+				piece.indexOfColumn - 1 === goToSq.indexOfColumn) ||
+			(piece.line + 1 === goToSq.line &&
+				piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
+			(piece.line + 1 === goToSq.line &&
+				piece.indexOfColumn - 1 === goToSq.indexOfColumn) ||
+			(piece.line - 1 === goToSq.line &&
+				piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
+			(piece.line - 1 === goToSq.line &&
+				piece.indexOfColumn - 1 === goToSq.indexOfColumn)
+		) {
+			movingPiece(piece, goToSq)
 		}
 	}
 	return (
@@ -444,10 +640,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}
@@ -467,10 +663,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}
@@ -492,10 +688,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}
@@ -515,10 +711,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}
