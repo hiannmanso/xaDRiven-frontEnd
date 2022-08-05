@@ -595,22 +595,23 @@ export function Table() {
 		console.log('king')
 		console.log(piece, goToSq)
 		if (
-			(piece.line + 1 === goToSq.line &&
+			((piece.line + 1 === goToSq.line &&
 				piece.indexOfColumn === goToSq.indexOfColumn) ||
-			(piece.line - 1 === goToSq.line &&
-				piece.indexOfColumn === goToSq.indexOfColumn) ||
-			(piece.line === goToSq.line &&
-				piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
-			(piece.line === goToSq.line &&
-				piece.indexOfColumn - 1 === goToSq.indexOfColumn) ||
-			(piece.line + 1 === goToSq.line &&
-				piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
-			(piece.line + 1 === goToSq.line &&
-				piece.indexOfColumn - 1 === goToSq.indexOfColumn) ||
-			(piece.line - 1 === goToSq.line &&
-				piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
-			(piece.line - 1 === goToSq.line &&
-				piece.indexOfColumn - 1 === goToSq.indexOfColumn)
+				(piece.line - 1 === goToSq.line &&
+					piece.indexOfColumn === goToSq.indexOfColumn) ||
+				(piece.line === goToSq.line &&
+					piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
+				(piece.line === goToSq.line &&
+					piece.indexOfColumn - 1 === goToSq.indexOfColumn) ||
+				(piece.line + 1 === goToSq.line &&
+					piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
+				(piece.line + 1 === goToSq.line &&
+					piece.indexOfColumn - 1 === goToSq.indexOfColumn) ||
+				(piece.line - 1 === goToSq.line &&
+					piece.indexOfColumn + 1 === goToSq.indexOfColumn) ||
+				(piece.line - 1 === goToSq.line &&
+					piece.indexOfColumn - 1 === goToSq.indexOfColumn)) &&
+			piece.color !== goToSq.color
 		) {
 			movingPiece(piece, goToSq)
 		}
