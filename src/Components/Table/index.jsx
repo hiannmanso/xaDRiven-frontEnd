@@ -172,7 +172,7 @@ export function Table() {
 			(table[indexPiece].contains = ''),
 			(table[indexPiece].color = '')),
 		])
-		// setWhitePlaying(!whitePlaying)
+		setWhitePlaying(!whitePlaying)
 		console.log(table)
 		makeANewMove()
 	}
