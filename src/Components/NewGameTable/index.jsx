@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from 'react'
 import AuthContext from '../../Contexts/Auth.context.jsx'
-import * as s from './style.jsx'
+import * as s from './styles.jsx'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
-export function Table() {
+export function NewGameTable() {
 	const { url, setTokengame } = useContext(AuthContext)
 	const [invites, setInvites] = useState()
 	const token = localStorage.getItem('token')
@@ -57,45 +57,69 @@ export function Table() {
 	const navigate = useNavigate()
 	const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-	useEffect(() => {
-		let contador = 0
-		for (let line = 8; line >= 1; --line) {
-			for (let column = 0; column < columns.length; ++column) {
-				const sq = columns[column] + line
-
-				if (initialPositions[sq]) {
-					setTable([
-						...table,
-						table.push({
-							position: sq,
-							contains: initialPositions[sq].split('-')[0],
-							line,
-							column: columns[column],
-							indexOfColumn: columns.indexOf(columns[column]),
-							index: contador,
-							color: initialPositions[sq].split('-')[1],
-						}),
-					])
-				} else {
-					setTable([
-						...table,
-						table.push({
-							position: sq,
-							contains: '',
-							line,
-							column: columns[column],
-							indexOfColumn: columns.indexOf(columns[column]),
-							index: contador,
-						}),
-					])
-				}
-				contador++
-				tableIndex.push(sq)
+	setInterval(() => {
+		table.map((item) => {
+			if (item.contains === 'king') {
 			}
-		}
+		})
+	})
+	useEffect(() => {
+		axios({
+			method: 'get',
+			url: `${url}/game/${tokenGAME}`,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
+			.then((response) => {
+				console.log('game loaded!')
+				console.log(response)
+				setTokengame(tokenGAME)
+				setTable(response.data.table)
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}, [boolMove])
+	// useEffect(() => {
+	// 	let contador = 0
+	// 	for (let line = 8; line >= 1; --line) {
+	// 		for (let column = 0; column < columns.length; ++column) {
+	// 			const sq = columns[column] + line
 
-		console.log(table)
-	}, [])
+	// 			if (initialPositions[sq]) {
+	// 				setTable([
+	// 					...table,
+	// 					table.push({
+	// 						position: sq,
+	// 						contains: initialPositions[sq].split('-')[0],
+	// 						line,
+	// 						column: columns[column],
+	// 						indexOfColumn: columns.indexOf(columns[column]),
+	// 						index: contador,
+	// 						color: initialPositions[sq].split('-')[1],
+	// 					}),
+	// 				])
+	// 			} else {
+	// 				setTable([
+	// 					...table,
+	// 					table.push({
+	// 						position: sq,
+	// 						contains: '',
+	// 						line,
+	// 						column: columns[column],
+	// 						indexOfColumn: columns.indexOf(columns[column]),
+	// 						index: contador,
+	// 					}),
+	// 				])
+	// 			}
+	// 			contador++
+	// 			tableIndex.push(sq)
+	// 		}
+	// 	}
+
+	// 	console.log(table)
+	// }, [])
 	useEffect(() => {
 		setTable([...table, (table[63] = {})])
 	}, [])
@@ -258,7 +282,7 @@ export function Table() {
 		])
 		setWhitePlaying(!whitePlaying)
 		console.log(table)
-		// postMoveOnDB(piece, goToSQ)
+		postMoveOnDB(piece, goToSQ)
 		makeANewMove()
 	}
 	function validateIFhaveAnotherPieceOnTheWay(piece, goToSq) {
