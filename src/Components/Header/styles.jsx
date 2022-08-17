@@ -23,7 +23,12 @@ export const HeaderComponent = styled.div`
 		font-size: 50px;
 	}
 	padding: 0 15px 0 15px;
+	svg:hover {
+		opacity: 1;
+		font-size: 150%;
+	}
 	svg {
+		opacity: 0.8;
 		cursor: pointer;
 		font-size: 30px;
 		padding-left: 30px;

@@ -5,6 +5,7 @@ import { useContext, useState } from 'react'
 import AuthContext from '../../Contexts/Auth.context.jsx'
 import { Link, useNavigate } from 'react-router-dom'
 import { BiCommentDetail } from 'react-icons/bi'
+import { BsFillPlayCircleFill } from 'react-icons/bs'
 
 export function Header() {
 	const token = localStorage.getItem('token')
@@ -63,6 +64,11 @@ export function Header() {
 				</Link>
 			</div>
 			<div>
+				<BsFillPlayCircleFill
+					onClick={() => {
+						navigate('/sologame')
+					}}
+				/>
 				<BiCommentDetail
 					onClick={() => {
 						findConvites()

@@ -4,7 +4,7 @@ import * as s from './style.jsx'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 export function Table() {
-	const { url, setTokengame } = useContext(AuthContext)
+	const { url, setTokengame, setMoves, moves } = useContext(AuthContext)
 	const [invites, setInvites] = useState()
 	const token = localStorage.getItem('token')
 	const { tokenGAME } = useParams()
@@ -248,6 +248,13 @@ export function Table() {
 		const indexPieceGO = goToSQ.index
 		if (goToSQ.contains === 'king') {
 			alert('Game finished!')
+			setWhitePlaying('')
+		}
+		const result = {
+			piece: piece.contains,
+			color: piece.color,
+			starting_position: piece.position,
+			final_position: goToSQ.position,
 		}
 		setTable([
 			...table,
@@ -259,6 +266,8 @@ export function Table() {
 		setWhitePlaying(!whitePlaying)
 		console.log(table)
 		// postMoveOnDB(piece, goToSQ)
+		setMoves([...moves, result])
+		console.log('movessss', moves)
 		makeANewMove()
 	}
 	function validateIFhaveAnotherPieceOnTheWay(piece, goToSq) {
@@ -826,10 +835,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}
@@ -849,10 +858,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}
@@ -874,10 +883,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}
@@ -897,10 +906,10 @@ export function Table() {
 											movePiece(item)
 										}}
 									>
-										<h1>
+										{/* <h1>
 											{item.column}
 											{item.line}
-										</h1>
+										</h1> */}
 										{item.contains ? (
 											<div
 												className={`piece ${item.contains} ${item.color}`}

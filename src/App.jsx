@@ -5,6 +5,7 @@ import { Game } from './Pages/Game/index.jsx'
 import { Home } from './Pages/Home/index.jsx'
 import { SignIN } from './Pages/SignIN/index.jsx'
 import { SignUP } from './Pages/SignUP/index.jsx'
+import { SoloGame } from './Pages/SoloGame/index.jsx'
 
 //reset css
 // import './css/reset.css'
@@ -16,6 +17,7 @@ export default function App() {
 	const [displayModalConvistes, setDisplayModalConvistes] = useState('none')
 	const [convites, setConvites] = useState()
 	const [tokengame, setTokengame] = useState()
+	const [moves, setMoves] = useState([])
 	return (
 		<>
 			<BrowserRouter>
@@ -30,6 +32,8 @@ export default function App() {
 						setConvites,
 						tokengame,
 						setTokengame,
+						moves,
+						setMoves,
 					}}
 				>
 					<Routes>
@@ -37,6 +41,7 @@ export default function App() {
 						<Route path='/sign-in' element={<SignIN />} />
 						<Route path='/sign-up' element={<SignUP />} />
 						<Route path='/game/:tokenGAME' element={<Game />} />
+						<Route path='/sologame' element={<SoloGame />} />
 					</Routes>
 				</AuthContext.Provider>
 			</BrowserRouter>

@@ -80,7 +80,7 @@ export function NewGameTable() {
 			.catch((error) => {
 				console.log(error)
 			})
-	}, [boolMove])
+	}, [])
 	// useEffect(() => {
 	// 	let contador = 0
 	// 	for (let line = 8; line >= 1; --line) {
@@ -175,6 +175,9 @@ export function NewGameTable() {
 			.then((response) => {
 				console.log('moveu')
 				setBoolMove(!boolMove)
+				if (response.data.whitePlayer) {
+					setWhitePlaying(true)
+				}
 				console.log(response)
 			})
 			.catch((error) => {
@@ -282,7 +285,7 @@ export function NewGameTable() {
 		])
 		setWhitePlaying(!whitePlaying)
 		console.log(table)
-		postMoveOnDB(piece, goToSQ)
+		// postMoveOnDB(piece, goToSQ)
 		makeANewMove()
 	}
 	function validateIFhaveAnotherPieceOnTheWay(piece, goToSq) {
